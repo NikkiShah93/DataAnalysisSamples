@@ -78,3 +78,33 @@ dataset_zipcode_sale = dataset_zipcode.groupby('Zipcode')['Sale'].agg({'Total Sa
 print(dataset_zipcode_sale.head(5))
 
 ## zipcode 94016 has the highest sale
+
+## Now we want generate an Excel file containing all of this info
+## It'll have 3 sheets for all the data, sale by month and sale by zipcode
+
+
+writer = pd.ExcelWriter('SaleDataOutput.xlsx', engine='xlsxwriter')
+
+dataset.drop_duplicates().to_excel(writer, sheet_name='Full Data', index = False)
+dataset_month_total_sale.drop_duplicates().to_excel(writer, sheet_name='Sale by Month', index = False)
+dataset_zipcode_sale.drop_duplicates().to_excel(writer, sheet_name='Sale by Zipcode', index = False)
+
+## Set the column width and format in an easy way
+
+workbook  = writer.book
+worksheet = writer.sheets['Full Data']
+
+worksheet.set_column('A:A', 15)
+worksheet.set_column('B:B', 45)
+worksheet.set_column('C:E', 15)
+worksheet.set_column('F:F', 45)
+
+workbook  = writer.book
+worksheet = writer.sheets['Sale by Month']
+worksheet.set_column('A:B', 16)
+
+workbook  = writer.book
+worksheet = writer.sheets['Sale by Zipcode']
+worksheet.set_column('A:B', 16)
+
+writer.save()
